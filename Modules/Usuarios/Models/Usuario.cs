@@ -16,6 +16,13 @@ namespace Backend.GestorProyectos.Models
         [Required]
         public DateTime FechaCreacion { get; set; }
 
-        public string Password { get; set;} = string.Empty;
+        public string Password { get; set; } = string.Empty;
+
+        //------------relación con rol-----------//
+        
+        [ForeignKey(nameof(Rol))]
+        public int RolId { get; set; }
+
+        public Rol Rol { get; set; } = null!;
     }
 }

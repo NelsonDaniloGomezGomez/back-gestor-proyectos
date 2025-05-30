@@ -10,9 +10,9 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public IActionResult Login([FromBody] LoginRequest request)
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        var usuario = _authService.ValidarUsuario(request.Email, request.Password);
+        var usuario = await _authService.ValidarUsuarioAsync(request.Email, request.Password);
 
         if (usuario == null)
             return Unauthorized(new { mensaje = "Credenciales inválidas" });

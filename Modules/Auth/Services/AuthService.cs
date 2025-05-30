@@ -1,26 +1,25 @@
 public class AuthService
 {
     private readonly IConfiguration _configuration;
+    private readonly GestorProyectosDbContext _context;
+    private readonly PasswordHasher<Usuario> _passwordHasher = new();
 
-    public AuthService(IConfiguration configuration)
+    public AuthService(IConfiguration configuration, GestorProyectosDbContext context)
     {
         _configuration = configuration;
+        _context = context;
     }
 
-    public Usuario? ValidarUsuario(string email, string password)
+    public async Task<Usuario?> ValidarUsuarioAsync(string email, string password)
     {
-        // Aquí debes reemplazar con tu lógica de validación real
-        if (email == "nelsondanilogomezgomez@gmail.com" && password == "123456")
-        {
-            return new Usuario
-            {
-                Id = 1,
-                Email = email,
-                Nombre = "Admin"
-            };
-        }
+        var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
 
-        return null;
+        if (usuario == null)
+            return null;
+
+        var resultado = _passwordHasher.VerifyHashedPassword(usuario, usuario.Password, password);
+
+        return resultado == PasswordVerificationResult.Success ? usuario : null;
     }
 
     public string GenerarToken(Usuario usuario)
@@ -34,8 +33,8 @@ public class AuthService
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim("id", usuario.Id.ToString()),
             new Claim("nombre", usuario.Nombre),
+            new Claim("RolId", usuario.RolId.ToString()),
             new Claim(ClaimTypes.Name, usuario.Email)
-
         };
 
         var token = new JwtSecurityToken(

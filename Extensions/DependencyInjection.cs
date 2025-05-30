@@ -1,8 +1,4 @@
-// Backend.GestorProyectos/Extensions/DependencyInjection.cs
-using Microsoft.Extensions.DependencyInjection;
-using Backend.GestorProyectos.Services;
-
-namespace Backend.GestorProyectos.Extensions
+namespace Backend.GestorProyectos.Data
 {
     public static class DependencyInjection
     {

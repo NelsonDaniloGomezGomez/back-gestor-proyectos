@@ -4,9 +4,9 @@ namespace Backend.GestorProyectos.Endpoints
     {
         public static void MapAuthEndpoints(this WebApplication app)
         {
-            app.MapPost("/login", (LoginRequest loginRequest, AuthService authService) =>
+            app.MapPost("/login", async (LoginRequest loginRequest, AuthService authService) =>
             {
-                var usuario = authService.ValidarUsuario(loginRequest.Email, loginRequest.Password);
+                var usuario = await authService.ValidarUsuarioAsync(loginRequest.Email, loginRequest.Password);
                 if (usuario == null)
                     return Results.Json(new { mensaje = "Credenciales inválidas" }, statusCode: 401);
 

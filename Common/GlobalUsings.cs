@@ -2,6 +2,7 @@
 global using System;
 global using System.Collections.Generic;
 global using System.ComponentModel.DataAnnotations;
+global using System.ComponentModel.DataAnnotations.Schema;
 global using System.IdentityModel.Tokens.Jwt;
 global using System.Linq;
 global using System.Net;
@@ -23,10 +24,14 @@ global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Hosting;
 global using Microsoft.IdentityModel.Tokens;
 global using Microsoft.OpenApi.Models;
+global using Microsoft.AspNetCore.Identity;
+global using BCrypt.Net;
 
 // Nombres del proyecto
 global using Backend.GestorProyectos.Endpoints;
-global using Backend.GestorProyectos.Extensions;
 global using Backend.GestorProyectos.Middlewares;
 global using Backend.GestorProyectos.Models;
 global using Backend.GestorProyectos.Services;
+global using Backend.GestorProyectos.Data;
+global using Backend.GestorProyectos.Dtos.Usuario;
+global using Backend.GestorProyectos.Common;

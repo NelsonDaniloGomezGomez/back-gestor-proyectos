@@ -27,11 +27,51 @@ namespace Backend.GestorProyectos.Endpoints
                 }
             }).WithName("GetUsuarioById");
 
-            app.MapPost("/usuarios", (Usuario usuario, UsuarioService service) =>
+            app.MapPost("/register", [Authorize] async (
+                UsuarioRegisterDto request,
+                HttpContext http,
+                UsuarioService usuarioService) =>
             {
-                service.CrearUsuario(usuario);
-                return Results.Created($"/usuarios/{usuario.Id}", usuario);
-            }).WithName("CrearUsuario");
+                try
+                {
+                    // Extraer el Id del creador desde los claims del token (asegúrate que se envíe en el JWT)
+                    var creadorIdString = http.User.FindFirst("id")?.Value;
+                    if (creadorIdString == null)
+                        return Results.Unauthorized();
+
+                    int creadorId = int.Parse(creadorIdString);
+
+                    // Obtener el rol del creador para lógica condicional (opcional, puedes delegar al servicio)
+                    int rolCreadorId = int.TryParse(http.User.FindFirst("RolId")?.Value, out var rol) ? rol : 0;
+
+                    bool esAdmin = rolCreadorId == (int)RoleEnum.Administrador;
+                    bool esJefeODesarrollador = rolCreadorId == (int)RoleEnum.JefeDeProyecto || rolCreadorId == (int)RoleEnum.Desarrollador;
+
+                    if (!esAdmin && !esJefeODesarrollador)
+                    {
+                        return Results.Json(new { mensaje = "No tiene permisos para registrar nuevos usuarios", rolCreadorId }, statusCode: 403);
+                    }
+
+                    var usuario = new Usuario
+                    {
+                        Nombre = request.Nombre,
+                        Email = request.Email,
+                        // Solo admins pueden asignar rol, otros siempre Invitado
+                        RolId = esAdmin ? request.IdRol : (int)RoleEnum.Invitado
+                    };
+
+                    var nuevoUsuario = await usuarioService.CrearUsuarioAsync(usuario, request.Password, creadorId);
+                    return Results.Created($"/usuarios/{nuevoUsuario.Id}", nuevoUsuario);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    return Results.BadRequest(new { mensaje = ex.Message });
+                }
+                catch (Exception ex)
+                {
+                    return Results.BadRequest(new { mensaje = ex.Message });
+                }
+            });
 
             app.MapPut("/usuarios/{id:int}", (int id, Usuario usuario, UsuarioService service) =>
             {
