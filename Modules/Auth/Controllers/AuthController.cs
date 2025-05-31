@@ -1,28 +1,38 @@
-[ApiController]
-[Route("api/[controller]")]
-public class AuthController : ControllerBase
+namespace Backend.GestorProyectos.Controllers
 {
-    private readonly AuthService _authService;
-
-    public AuthController(AuthService authService)
+    [ApiController]
+    [Route("[controller]")]
+    public class AuthController : ControllerBase
     {
-        _authService = authService;
-    }
+        private readonly JwtService _jwtService;
+        private readonly IRefreshTokenService _refreshTokenService;
 
-    [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginRequest request)
-    {
-        var usuario = await _authService.ValidarUsuarioAsync(request.Email, request.Password);
-
-        if (usuario == null)
-            return Unauthorized(new { mensaje = "Credenciales inválidas" });
-
-        var token = _authService.GenerarToken(usuario);
-        
-        return Ok(new
+        public AuthController(JwtService jwtService, IRefreshTokenService refreshTokenService)
         {
-            message = "Logueado correctamente",
-            token = token
-        });
+            _jwtService = jwtService;
+            _refreshTokenService = refreshTokenService;
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginRequest request)
+        {
+            try
+            {
+                var result = await _refreshTokenService.LoginAsync(request.Email, request.Password);
+                return Ok(result);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized(new { mensaje = "Credenciales inválidas" });
+            }
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken([FromBody] string refreshToken)
+        {
+            var result = await _refreshTokenService.RefreshTokenAsync(refreshToken);
+            if (result == null) return Unauthorized();
+            return Ok(result);
+        }
     }
 }

@@ -10,6 +10,7 @@ global using System.Security.Claims;
 global using System.Text;
 global using System.Text.Json;
 global using System.Threading.Tasks;
+global using System.Security.Cryptography;
 
 // Microsoft ASP.NET Core y extensiones
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -25,7 +26,6 @@ global using Microsoft.Extensions.Hosting;
 global using Microsoft.IdentityModel.Tokens;
 global using Microsoft.OpenApi.Models;
 global using Microsoft.AspNetCore.Identity;
-global using BCrypt.Net;
 
 // Nombres del proyecto
 global using Backend.GestorProyectos.Endpoints;

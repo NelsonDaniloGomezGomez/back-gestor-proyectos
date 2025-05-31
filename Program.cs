@@ -17,9 +17,14 @@ builder.Services.AddDbContext<GestorProyectosDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Servicios del dominio
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+builder.Services.AddHttpContextAccessor();
 
 // Swagger y Endpoints API
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<UsuarioService>();

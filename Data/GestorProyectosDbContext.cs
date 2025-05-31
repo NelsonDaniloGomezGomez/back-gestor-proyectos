@@ -5,7 +5,8 @@ public class GestorProyectosDbContext : DbContext
     }
 
     public DbSet<Usuario> Usuarios { get; set; }
-    public DbSet<Rol> Roles { get; set; }  // <-- Añade este DbSet
+    public DbSet<Rol> Roles { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }  // <- Agregado
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
